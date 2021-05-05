@@ -39,7 +39,7 @@ head(mpg)
 
 # 3. Explore new plotting aesthetics ------------------------------------------
 
-## So far in the workshops, we have explored how to change the colors and shapes
+## Previously in the workshops, we have explored how to change the colors and shapes
 ## of points when using geom_point()
 
 ## For instance, let's look at a graph of engine displacement vs highway miles per gallon
@@ -115,7 +115,7 @@ mpg %>%
   geom_point(size = 2) +
   scale_color_brewer(palette = "Dark2")
 
-## Show color palette cheatsheet from powerpoint (and on shared Google Drive!)
+## Show color palette cheatsheet from shared Google Drive
 
 ## You don't have to rely on the predetermined palettes - you can set colors manually
 
@@ -282,8 +282,67 @@ mpg %>%
 
 # 7. Exporting plots ------------------------------------------------------
 
-ggsave(filename = "~/Desktop/FIU_R_Workshop/workshop5_data_visualization_pt2/mpg_plot_2.pdf",
+ggsave(filename = "~/Desktop/mpg_plot_2.pdf",
        width = 6,
        height = 5,
        dpi = 320)
 
+
+
+# 8. Fun additional packages ----------------------------------------------
+
+## Some additional packages I have recently been using include the patchwork and ggrepel packages
+  # Patchwork makes it very easy to stitch together two separate plots (for instance for a two-panel figure in a paper)
+  # ggrepel adds some new geoms that allow us to prevent overlapping labels when adding text to our plots.
+library(patchwork)
+library(ggrepel)
+
+
+
+# * 8.1 Patchwork ---------------------------------------------------------
+
+
+  # Patchwork requires you to create two (or more) plots and store them as objects. Let's use some plots we've already created
+plot1 <- mpg %>% 
+  ggplot(aes(x = displ, y = hwy, color = class)) +
+  geom_point(size = 2) +
+  scale_color_brewer(palette = "Dark2")
+
+plot2 <- mpg %>% 
+  ggplot(aes(x = displ, y = hwy, color = displ)) +
+  geom_point(size = 2)
+
+# Once the plots are stored, we simply "add" them together if we want them side by side! Run the following line of code
+plot1 + plot2
+
+# If we want the two plots to be stacked vertically, use the divide sign
+plot1/plot2
+
+# You can even pre-add plot labels (e.g. A, B, etc) by adding on the plot_annotation() function
+plot1 + plot2 + 
+  plot_annotation(tag_levels = "A")
+
+
+
+# * 8.2 ggrepel -----------------------------------------------------------
+
+## ggrepel allows us to create non-overlapping text labels
+  # To make things easier to view, let's filter for a specific class of car and then label the manufacturer
+
+## First, let's try labeling with JUST geom_text
+mpg %>% 
+  filter(class == "subcompact") %>% 
+  ggplot(aes(x = displ, y = hwy)) +
+  geom_point(size = 2) +
+  geom_text(aes(label = manufacturer))
+# It is REALLY difficult to see the text!!!
+
+## We can substitute geom_text_repel for geom_text
+  # The geom works by randomly placing the labels near the points until there are minimal overlaps (so it takes a little longer than normal)
+mpg %>% 
+  filter(class == "subcompact") %>% 
+  ggplot(aes(x = displ, y = hwy)) +
+  geom_point(size = 2) +
+  geom_text_repel(aes(label = manufacturer))
+# It is also nice because it draws little arrows to the corresponding points!
+# geom_label_repel is another nice options
