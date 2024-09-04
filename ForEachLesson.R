@@ -66,13 +66,15 @@ detectCores()
 #I usually use less than max, so I can do other things on my computer.
 
 #One way is to make a cluster
-#registerDoParalle(cores=number of coores you want to use)
-registerDoParallel(cores=5)
+#registerDoParalle(cores=number of coores you want to use) # for Calvin's comp, 1 is the default
+registerDoParallel(cores = 1)
 system.time(foreach(i=1:length(numbers)) %dopar% {
   is_prime(numbers[i])
 })
 #generally good practice to end cluster, prevents system from still taking up cpu's
 stopImplicitCluster()
+
+getDoParWorkers()
 
 #compare times 
 registerDoParallel(cores=5)
